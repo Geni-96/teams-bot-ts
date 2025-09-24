@@ -29,6 +29,10 @@ The application consists of two main parts:
 
 ![ACS Sequence Diagram](../docs/images/acs-sequence.svg)
 
+## Sequence Diagram
+
+![ACS Sequence Diagram](./docs/images/acs-sequence.svg)
+
 ## Prerequisites
 
 - Node.js 18+

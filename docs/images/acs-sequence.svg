@@ -1,0 +1,30 @@
+<svg width="800" height="400" viewBox="0 0 800 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="400" fill="white"/>
+  <text x="40" y="40" font-size="20" font-family="Arial" fill="#222">Azure Communication Services Calling Web App - Sequence Diagram</text>
+  <text x="80" y="90" font-size="16" font-family="Arial" fill="#0057b8">User (Browser)</text>
+  <text x="280" y="90" font-size="16" font-family="Arial" fill="#0057b8">ACS</text>
+  <text x="480" y="90" font-size="16" font-family="Arial" fill="#0057b8">Backend</text>
+  <text x="680" y="90" font-size="16" font-family="Arial" fill="#0057b8">Whisper</text>
+  <line x1="100" y1="100" x2="100" y2="350" stroke="#bbb" stroke-width="2" stroke-dasharray="6 4"/>
+  <line x1="300" y1="100" x2="300" y2="350" stroke="#bbb" stroke-width="2" stroke-dasharray="6 4"/>
+  <line x1="500" y1="100" x2="500" y2="350" stroke="#bbb" stroke-width="2" stroke-dasharray="6 4"/>
+  <line x1="700" y1="100" x2="700" y2="350" stroke="#bbb" stroke-width="2" stroke-dasharray="6 4"/>
+  <polygon points="300,130 290,135 300,140" fill="#0057b8"/>
+  <line x1="100" y1="135" x2="300" y2="135" stroke="#0057b8" stroke-width="2"/>
+  <text x="120" y="128" font-size="14" font-family="Arial" fill="#0057b8">Join meeting via ACS SDK</text>
+  <polygon points="100,170 110,175 100,180" fill="#0057b8"/>
+  <line x1="300" y1="175" x2="100" y2="175" stroke="#0057b8" stroke-width="2"/>
+  <text x="140" y="168" font-size="14" font-family="Arial" fill="#0057b8">Provide raw audio stream(s)</text>
+  <polygon points="500,210 490,215 500,220" fill="#0057b8"/>
+  <line x1="100" y1="215" x2="500" y2="215" stroke="#0057b8" stroke-width="2"/>
+  <text x="180" y="208" font-size="14" font-family="Arial" fill="#0057b8">Send PCM audio frames (WebSocket)</text>
+  <polygon points="700,250 690,255 700,260" fill="#0057b8"/>
+  <line x1="500" y1="255" x2="700" y2="255" stroke="#0057b8" stroke-width="2"/>
+  <text x="540" y="248" font-size="14" font-family="Arial" fill="#0057b8">Run Whisper on audio chunk</text>
+  <polygon points="500,290 510,295 500,300" fill="#0057b8"/>
+  <line x1="700" y1="295" x2="500" y2="295" stroke="#0057b8" stroke-width="2"/>
+  <text x="540" y="288" font-size="14" font-family="Arial" fill="#0057b8">Return transcript</text>
+  <polygon points="100,330 110,335 100,340" fill="#0057b8"/>
+  <line x1="500" y1="335" x2="100" y2="335" stroke="#0057b8" stroke-width="2"/>
+  <text x="180" y="328" font-size="14" font-family="Arial" fill="#0057b8">(Optional) Send transcript</text>
+</svg>
