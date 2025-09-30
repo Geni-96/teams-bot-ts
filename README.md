@@ -4,7 +4,7 @@ This is a TypeScript project with a Fastify backend and React frontend for Azure
 
 ## Architecture
 
-The application consists of two main parts:
+The application consists of three main components:
 
 ### Backend (Fastify + TypeScript)
 - **Location**: `backend/`
@@ -24,6 +24,15 @@ The application consists of two main parts:
   - Azure Communication Services calling SDK integration
   - Real-time audio streaming to backend
   - WebSocket communication
+
+### CLI Tool (Headless Operation)
+- **Location**: `backend/src/cli.ts`
+- **Features**:
+  - Headless meeting joining without UI
+  - Command-line interface for automation
+  - Same ACS integration as frontend
+  - WebSocket audio streaming to backend
+  - Perfect for bots, testing, and server-side integration
 
 ## Sequence Diagram
 
@@ -80,7 +89,44 @@ npm run dev:frontend
 - `npm run dev` - Start both backend and frontend in development mode
 - `npm run build` - Build both backend and frontend
 - `npm run start` - Start production backend server
+- `npm run cli` - Run the CLI tool for headless meeting joining
 - `npm run test` - Run tests for both projects
+
+## CLI Tool (Headless Meeting Join)
+
+This project includes a command-line interface for joining ACS meetings without the graphical frontend. Perfect for automated testing, bots, or server-side integration.
+
+### Quick Start with CLI
+
+1. **Start the backend server**:
+   ```bash
+   npm run dev:backend
+   ```
+
+2. **Join a meeting using URL**:
+   ```bash
+   npm run cli --workspace=backend -- join-url "https://teams.microsoft.com/l/meetup-join/your-meeting-url"
+   ```
+
+3. **Join using meeting ID and passcode**:
+   ```bash
+   npm run cli --workspace=backend -- join-id "meeting-id" "passcode"
+   ```
+
+### CLI Options
+- `--duration <minutes>` - How long to stay in meeting (default: 10 minutes)
+- Press `Ctrl+C` to leave early
+
+### CLI Examples
+```bash
+# Join for 5 minutes
+npm run cli --workspace=backend -- join-url "meeting-url" --duration 5
+
+# Join with meeting ID for 20 minutes  
+npm run cli --workspace=backend -- join-id "123456789" "abc123" --duration 20
+```
+
+📖 **For detailed CLI documentation, see [CLI_README.md](./CLI_README.md)**
 
 ## Environment Variables
 

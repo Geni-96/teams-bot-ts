@@ -15,6 +15,11 @@
     "build:backend": "npm run build --workspace=backend",
     "build:frontend": "npm run build --workspace=frontend",
     "start": "npm run start --workspace=backend",
+    "cli": "npm run cli --workspace=backend",
+    "cli:simple": "npm run cli:simple --workspace=backend",
+    "cli:headless": "npm run cli:headless --workspace=backend",
+    "cli:dev": "npm run cli:dev --workspace=backend",
+    "example": "npm run example --workspace=backend",
     "test": "npm run test --workspace=backend && npm run test --workspace=frontend"
   },
   "devDependencies": {

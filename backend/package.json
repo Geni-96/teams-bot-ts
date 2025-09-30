@@ -7,21 +7,38 @@
     "build": "tsc",
     "dev": "tsx watch src/server.ts",
     "start": "node dist/server.js",
+    "cli": "npm run build && node dist/cli.js",
+    "cli:simple": "npm run build && node dist/cli-simple.js",
+    "cli:headless": "npm run build && node dist/cli-headless.js",
+    "cli:dev": "tsx src/cli.ts",
+    "example": "npm run build && node dist/example-bot.js",
+    "example:dev": "tsx src/example-bot.ts",
     "test": "jest",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix"
   },
+  "bin": {
+    "acs-meeting-cli": "./dist/cli.js"
+  },
   "dependencies": {
+    "@azure/communication-calling": "^1.13.1",
     "@azure/communication-common": "^2.2.0",
     "@azure/communication-identity": "^1.2.0",
-    "fastify": "^4.21.0",
-    "@fastify/websocket": "^10.0.0",
     "@fastify/cors": "^9.0.0",
+    "@fastify/websocket": "^10.0.0",
+    "canvas": "^3.2.0",
+    "commander": "^11.0.0",
+    "dotenv": "^16.3.0",
+    "fastify": "^4.21.0",
+    "jsdom": "^27.0.0",
     "node-wav": "^0.0.2",
-    "dotenv": "^16.3.0"
+    "playwright": "^1.55.1",
+    "ws": "^8.18.3"
   },
   "devDependencies": {
+    "@types/jsdom": "^27.0.0",
     "@types/node": "^20.0.0",
+    "@types/ws": "^8.5.0",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "eslint": "^8.44.0",
