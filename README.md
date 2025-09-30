@@ -101,9 +101,20 @@ NODE_ENV=development
 
 1. Start the development servers
 2. Open http://localhost:3000 in your browser
-3. Enter a Teams meeting URL
+3. Choose your preferred join method:
+   - **Meeting URL**: Enter a Teams meeting URL directly
+   - **Meeting ID & Passcode**: Enter the meeting ID and passcode separately
 4. Click "Join Meeting"
 5. The app will connect to the meeting and start streaming audio for transcription
+
+### Join Methods
+
+**Option 1: Meeting URL**
+- Enter the complete Teams meeting URL (e.g., `https://teams.microsoft.com/l/meetup-join/...`)
+
+**Option 2: Meeting ID & Passcode**
+- Meeting ID: The numeric meeting ID from Teams
+- Passcode: The meeting passcode/PIN if required
 
 ## Technical Details
 

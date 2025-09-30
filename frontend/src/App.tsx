@@ -14,6 +14,9 @@ function App() {
   const [call, setCall] = useState<Call | null>(null);
   const [connectionStatus, setConnectionStatus] = useState<string>('Disconnected');
   const [meetingUrl, setMeetingUrl] = useState<string>('');
+  const [meetingId, setMeetingId] = useState<string>('');
+  const [passcode, setPasscode] = useState<string>('');
+  const [joinMethod, setJoinMethod] = useState<'url' | 'id'>('url');
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
   const wsRef = useRef<WebSocket | null>(null);
 
@@ -48,15 +51,43 @@ function App() {
   };
 
   const joinMeeting = async () => {
-    if (!callAgent || !meetingUrl.trim()) {
-      alert('Please enter a valid meeting URL');
+    if (!callAgent) {
+      alert('Call agent not initialized');
       return;
+    }
+
+    // Validate inputs based on join method
+    if (joinMethod === 'url') {
+      if (!meetingUrl.trim()) {
+        alert('Please enter a valid meeting URL');
+        return;
+      }
+    } else {
+      if (!meetingId.trim()) {
+        alert('Please enter a valid meeting ID');
+        return;
+      }
+      if (!passcode.trim()) {
+        alert('Please enter a valid passcode');
+        return;
+      }
     }
 
     try {
       setConnectionStatus('Connecting...');
       
-      const locator = { meetingLink: meetingUrl };
+      let locator: any;
+      if (joinMethod === 'url') {
+        // Join using Teams meeting URL
+        locator = { meetingLink: meetingUrl };
+      } else {
+        // Join using meeting ID and passcode
+        locator = {
+          meetingId: meetingId,
+          passcode: passcode
+        };
+      }
+      
       const joinedCall = callAgent.join(locator);
       
       setCall(joinedCall);
@@ -109,7 +140,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <h1>Azure Communication Services Calling App</h1>
-        <p>Status: {connectionStatus}</p>
+        <p className="status-text">Status: {connectionStatus}</p>
         
         {!isInitialized && (
           <div>
@@ -118,25 +149,72 @@ function App() {
         )}
         
         {isInitialized && !call && (
-          <div>
-            <input
-              type="text"
-              value={meetingUrl}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMeetingUrl(e.target.value)}
-              placeholder="Enter Teams meeting URL"
-              style={{ width: '300px', margin: '10px', padding: '10px' }}
-            />
-            <br />
-            <button onClick={joinMeeting} style={{ padding: '10px 20px', margin: '10px' }}>
+          <div className="join-container">
+            <div className="join-method-section">
+              <h3>Choose Join Method:</h3>
+              <label className="radio-option">
+                <input
+                  type="radio"
+                  name="joinMethod"
+                  value="url"
+                  checked={joinMethod === 'url'}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setJoinMethod(e.target.value as 'url' | 'id')}
+                />
+                Join with Meeting URL
+              </label>
+              <label className="radio-option">
+                <input
+                  type="radio"
+                  name="joinMethod"
+                  value="id"
+                  checked={joinMethod === 'id'}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setJoinMethod(e.target.value as 'url' | 'id')}
+                />
+                Join with Meeting ID & Passcode
+              </label>
+            </div>
+
+            {joinMethod === 'url' && (
+              <div className="input-section">
+                <input
+                  type="text"
+                  value={meetingUrl}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMeetingUrl(e.target.value)}
+                  placeholder="Enter Teams meeting URL"
+                  className="meeting-input"
+                />
+              </div>
+            )}
+
+            {joinMethod === 'id' && (
+              <div className="input-section">
+                <input
+                  type="text"
+                  value={meetingId}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMeetingId(e.target.value)}
+                  placeholder="Enter Meeting ID"
+                  className="meeting-input"
+                />
+                <input
+                  type="text"
+                  value={passcode}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPasscode(e.target.value)}
+                  placeholder="Enter Passcode"
+                  className="meeting-input"
+                />
+              </div>
+            )}
+
+            <button onClick={joinMeeting} className="join-button">
               Join Meeting
             </button>
           </div>
         )}
         
         {call && (
-          <div>
+          <div className="join-container">
             <p>Connected to meeting</p>
-            <button onClick={leaveMeeting} style={{ padding: '10px 20px', margin: '10px' }}>
+            <button onClick={leaveMeeting} className="leave-button">
               Leave Meeting
             </button>
           </div>
