@@ -17,8 +17,8 @@ Fastify meets React for an end-to-end Azure Communication Services (ACS) calling
 ## ✅ Prerequisites
 
 - Node.js **18 or newer**
-- An ACS resource with a valid connection string
-- A Teams meeting that allows anonymous joins
+- An ACS resource with a valid connection string (To create a connection string for your account, login to ACS, under homepage create a new resource group and get the connection endpoint from there.)
+- A Teams meeting that allows anonymous joins. (ACS only allows you to control joins for org or school meetings. And you can join a meeting that you have permissions to join.)
 - Playwright browsers installed locally (`npx playwright install` once per machine)
 
 ## 🚀 Getting Started
