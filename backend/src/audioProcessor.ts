@@ -82,7 +82,7 @@ export class AudioProcessor {
     return Buffer.from(audioData);
   }
 
-  private async runWhisperTranscription(wavFile: Buffer): Promise<{
+  protected async runWhisperTranscription(wavFile: Buffer): Promise<{
     text: string;
     startMs: number;
     endMs: number;
