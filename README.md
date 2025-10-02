@@ -26,13 +26,13 @@ The application consists of three main components:
   - WebSocket communication
 
 ### CLI Tool (Headless Operation)
-- **Location**: `backend/src/cli.ts`
+- **Location**: `backend/src/cli-headless.ts`
 - **Features**:
-  - Headless meeting joining without UI
-  - Command-line interface for automation
-  - Same ACS integration as frontend
-  - WebSocket audio streaming to backend
-  - Perfect for bots, testing, and server-side integration
+   - Headless meeting joining powered by Playwright automation
+   - Starts backend and frontend services automatically
+   - Streams meeting audio through the browser-based experience
+   - Reuses ACS integration from the frontend
+   - Ideal for bots, testing, and server-side workflows
 
 ## Sequence Diagram
 
@@ -89,7 +89,7 @@ npm run dev:frontend
 - `npm run dev` - Start both backend and frontend in development mode
 - `npm run build` - Build both backend and frontend
 - `npm run start` - Start production backend server
-- `npm run cli` - Run the CLI tool for headless meeting joining
+- `npm run cli` - Run the headless CLI for automated meeting joining
 - `npm run test` - Run tests for both projects
 
 ## CLI Tool (Headless Meeting Join)
@@ -98,23 +98,18 @@ This project includes a command-line interface for joining ACS meetings without 
 
 ### Quick Start with CLI
 
-1. **Start the backend server**:
-   ```bash
-   npm run dev:backend
-   ```
-
-2. **Join a meeting using URL**:
+1. **Launch the headless CLI** (it will boot the backend and frontend automatically):
    ```bash
    npm run cli --workspace=backend -- join-url "https://teams.microsoft.com/l/meetup-join/your-meeting-url"
    ```
 
-3. **Join using meeting ID and passcode**:
+2. **Join using meeting ID and passcode**:
    ```bash
    npm run cli --workspace=backend -- join-id "meeting-id" "passcode"
    ```
 
 ### CLI Options
-- `--duration <minutes>` - How long to stay in meeting (default: 10 minutes)
+- `--duration <minutes>` - How long to stay in meeting (default: 5 minutes)
 - Press `Ctrl+C` to leave early
 
 ### CLI Examples
@@ -122,7 +117,7 @@ This project includes a command-line interface for joining ACS meetings without 
 # Join for 5 minutes
 npm run cli --workspace=backend -- join-url "meeting-url" --duration 5
 
-# Join with meeting ID for 20 minutes  
+# Join with meeting ID for 20 minutes
 npm run cli --workspace=backend -- join-id "123456789" "abc123" --duration 20
 ```
 
@@ -177,7 +172,8 @@ NODE_ENV=development
 
 **Backend**:
 - `fastify` - Web framework
-- `@azure/communication-*` - Azure Communication Services SDKs
+- `@azure/communication-identity` - Azure Communication Services identity SDK
+- `playwright` - Headless browser automation for the CLI
 - `typescript` - TypeScript support
 
 **Frontend**:

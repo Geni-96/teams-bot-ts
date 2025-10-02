@@ -1,203 +1,97 @@
-# ACS Meeting CLI
+# ACS Meeting CLI (Headless)
 
-A command-line interface tool for joining Azure Communication Services meetings without a graphical frontend.
+A Playwright-powered automation layer that launches the full browser experience in headless mode to join Azure Communication Services (ACS) meetings without manual interaction.
 
 ## Prerequisites
 
-1. Ensure you have the ACS connection string set in your environment variables or `.env` file:
+1. Configure the ACS connection string in `backend/.env`:
    ```
-   ACS_CONNECTION_STRING=your_acs_connection_string_here
+   ACS_CONNECTION_STRING=endpoint=https://...;accesskey=...
    ```
-
-2. Make sure the backend server is running:
+2. Install project dependencies from the repository root:
    ```bash
-   npm run dev:backend
+   npm install
    ```
-
-## Installation
-
-The CLI tool is part of the backend workspace. All dependencies are installed when you run:
-
-```bash
-npm install
-```
-
-## Usage
-
-The CLI tool supports two methods of joining meetings. **Important**: The CLI uses compiled JavaScript to avoid conflicts with the ACS SDK.
-
-### Method 1: Join using Teams Meeting URL
-
-```bash
-npm run cli --workspace=backend -- join-url "https://teams.microsoft.com/l/meetup-join/your-meeting-url"
-```
-
-With custom duration (default is 10 minutes):
-```bash
-npm run cli --workspace=backend -- join-url "https://teams.microsoft.com/l/meetup-join/your-meeting-url" --duration 30
-```
-
-### Method 2: Join using Meeting ID and Passcode
-
-```bash
-npm run cli --workspace=backend -- join-id "meeting-id" "passcode"
-```
-
-With custom duration:
-```bash
-npm run cli --workspace=backend -- join-id "meeting-id" "passcode" --duration 15
-```
-
-### Quick Commands (from root directory)
-
-```bash
-# Show help
-npm run cli --workspace=backend -- --help
-
-# Join with URL
-npm run cli --workspace=backend -- join-url "meeting-url" --duration 5
-
-# Join with ID and passcode  
-npm run cli --workspace=backend -- join-id "123456" "abc123" --duration 10
-```
-
-## Options
-
-- `--duration <minutes>` or `-d <minutes>`: Specify how long to stay in the meeting (default: 10 minutes)
-
-## Examples
-
-1. **Join a Teams meeting for 5 minutes:**
+3. (One-time) Install Playwright browsers if they are not already cached:
    ```bash
-   npm run cli --workspace=backend -- join-url "https://teams.microsoft.com/l/meetup-join/19%3ameeting_example" --duration 5
+   npx playwright install
    ```
 
-2. **Join using meeting ID and stay for 20 minutes:**
-   ```bash
-   npm run cli --workspace=backend -- join-id "123456789" "abc123" --duration 20
-   ```
+> The CLI handles backend/frontend start-up on its own—no need to launch them manually.
 
-3. **Exit early:** Press `Ctrl+C` to leave the meeting before the duration expires
-
-### Alternative: Direct backend commands
-
-If you're working in the backend directory:
-```bash
-cd backend
-npm run cli join-url "meeting-url" --duration 5
-npm run cli join-id "meeting-id" "passcode" --duration 10
-```
-
-## Features
-
-- ✅ Headless meeting joining (no GUI required)
-- ✅ Support for both Teams meeting URLs and meeting ID/passcode
-- ✅ Audio streaming to backend for processing
-- ✅ Graceful shutdown with Ctrl+C
-- ✅ Configurable meeting duration
-- ✅ Real-time participant tracking
-- ✅ WebSocket integration with backend
-
-## How it Works
-
-1. **Initialization**: Creates an ACS user and generates an access token
-2. **Meeting Join**: Connects to the specified Teams meeting
-3. **Audio Streaming**: Sets up WebSocket connection to backend for audio processing
-4. **Event Handling**: Monitors call state and participant changes
-5. **Cleanup**: Gracefully leaves the meeting and closes connections
-
-## Troubleshooting
-
-### Common Issues
-
-1. **"Cannot redefine property: name" error**
-   - This happens when using tsx with the ACS SDK
-   - **Solution**: Use the compiled version: `npm run cli` (not `npm run cli:dev`)
-   - The CLI automatically builds before running to avoid this issue
-
-2. **"Call agent not initialized"**
-   - Ensure your ACS connection string is valid
-   - Check that the ACS service is properly configured
-   - Verify the connection string format in .env file
-
-3. **"ACS_CONNECTION_STRING environment variable is not set"**
-   - Copy `.env.example` to `.env` in the backend directory
-   - Add your ACS connection string to the .env file
-   - Format: `ACS_CONNECTION_STRING=endpoint=https://...;accesskey=...`
-
-4. **"Failed to join meeting"**
-   - Verify the meeting URL/ID and passcode are correct
-   - Ensure the meeting is active and joinable
-   - Check that anonymous join is enabled for the meeting
-
-### Logs
-
-The CLI provides detailed logging with emojis for easy identification:
-- 🔧 Initialization steps
-- ✅ Successful operations
-- ❌ Errors and failures
-- 📞 Call state changes
-- 👥 Participant updates
-- 🎵 Audio-related events
-- ⏰ Timing information
-
-## Development
-
-To modify the CLI tool, edit the file:
-```
-backend/src/cli.ts
-```
-
-Build the project:
-```bash
-npm run build:backend
-```
-
-For development with hot-reload:
-```bash
-# Terminal 1: Start backend server
-npm run dev:backend
-
-# Terminal 2: Run CLI commands
-npm run cli join-url "your-meeting-url"
-```
-
-### Example Bot Usage
-
-An example bot script is provided to demonstrate programmatic usage:
+## Quick Start
 
 ```bash
-# Run the example bot with a meeting URL
-npm run example "https://teams.microsoft.com/l/meetup-join/your-meeting-url"
+# Join via meeting URL for the default 5 minutes
+npm run cli --workspace=backend -- join-url "https://teams.microsoft.com/l/meetup-join/..."
+
+# Join via meeting ID + passcode for 15 minutes
+npm run cli --workspace=backend -- join-id "MEETING_ID" "PASSCODE" --duration 15
 ```
 
-The example bot (`backend/src/example-bot.ts`) shows how to:
-- Automatically start the backend server
-- Join meetings programmatically
-- Handle process lifecycle
-- Implement automated testing scenarios
+### Command Options
+- `--duration <minutes>` (alias `-d`): stay in the meeting for the given number of minutes. Default is **5**.
 
-You can use this as a starting point for building your own automated meeting bots.
+### Exit Early
+Press `Ctrl+C` at any time. The CLI traps the signal, leaves the meeting, and tears down all spawned processes before exiting.
 
-## Architecture
+## What the CLI Does
 
-The CLI tool integrates with the existing architecture:
+```mermaid
+flowchart TD
+    A[CLI Command] --> B[Start Fastify Backend]
+    A --> C[Start Vite Frontend]
+    A --> D[Launch Headless Chromium]
+    D --> E[Load Frontend UI]
+    E --> F[Fill Join Form]
+    F --> G[Join Teams Meeting]
+    G --> H[Stay Connected for Duration]
+    H --> I[Graceful Cleanup]
 
+   classDef service fill:#0f6,stroke:#0d3,stroke-width:1.5px,color:#fff;
+    class B,C service
 ```
-CLI Tool (cli.ts)
-    ↓
-ACS SDK (Call Client)
-    ↓
-Teams Meeting
-    ↓
-Audio Stream → WebSocket → Backend Server (server.ts)
-    ↓
-Audio Processing (audioProcessor.ts)
+
+1. **Provision Identity** – Uses `CommunicationIdentityClient` to create a user and token.
+2. **Boot Servers** – Spawns `npm run dev` inside backend and frontend workspaces, streaming their logs to the terminal.
+3. **Automate Browser** – Launches headless Chromium, grants microphone permissions, loads `http://localhost:3000`, and fills the meeting form just like a human.
+4. **Monitor Session** – Waits for confirmation, keeps the meeting alive for the requested duration, and surfaces status updates in the console.
+5. **Cleanup** – Leaves the meeting, closes the Playwright browser, and terminates backend/frontend processes.
+
+## Troubleshooting & Tips
+
+| Symptom | Fix |
+| --- | --- |
+| CLI prints “Backend startup timeout” | Check that ports 3000/3001 are free, then retry. |
+| Playwright complains about missing browsers | Run `npx playwright install`. |
+| Meeting never shows “Connected” | Verify that anonymous join is enabled and the meeting URL/credentials are valid. |
+| Want to inspect the UI | Temporarily change `headless: true` to `false` inside `cli-headless.ts` while debugging. |
+
+Logs are prefixed with `[Backend]` or `[Frontend]` so you can see exactly what each service is doing while the headless browser runs.
+
+## Development Notes
+
+- Source file: `backend/src/cli-headless.ts`
+- Build output: `backend/dist/cli-headless.js`
+- Run without rebuilding when iterating:
+  ```bash
+  cd backend
+  npm run cli:headless -- join-url "https://teams.microsoft.com/l/..."
+  ```
+
+### Example Bot Automation
+
+`backend/src/example-bot.ts` demonstrates how to orchestrate the CLI programmatically. It starts the backend, triggers the CLI command with your arguments, and monitors completion.
+
+```bash
+# From the repository root
+npm run example -- "https://teams.microsoft.com/l/meetup-join/..."
 ```
 
 ## Security Notes
 
-- Connection strings and tokens are handled securely
-- All communications use HTTPS/WSS protocols
-- No meeting data is stored locally
-- Automatic cleanup of resources on exit
+- Tokens are created on-demand and discarded after use.
+- The CLI runs entirely on your machine; no meeting data is persisted.
+- Always guard the ACS connection string—avoid committing real values to version control.
+
+The legacy Node-only implementations (`cli.ts`, `cli-simple.ts`) have been removed. The headless CLI is the authoritative way to exercise the ACS meeting flow from automation or CI.

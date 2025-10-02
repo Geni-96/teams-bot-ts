@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Demo script for ACS Meeting CLI
-# This script demonstrates the different ways to use the CLI tool
+# Demo script for the headless ACS Meeting CLI
+# This script demonstrates the different ways to use the browser-automation CLI
 
-echo "🎯 ACS Meeting CLI Demo"
+echo "🎯 ACS Headless Meeting CLI Demo"
 echo "======================="
 echo ""
 
@@ -29,25 +29,25 @@ echo "3️⃣  Show CLI help:"
 echo "   npm run cli --workspace=backend -- --help"
 echo ""
 
-echo "4️⃣  Run example bot (automated):"
+echo "4️⃣  Run example bot (automated headless run):"
 echo "   npm run example --workspace=backend -- \"https://teams.microsoft.com/l/meetup-join/YOUR_MEETING_URL\""
 echo ""
 
 echo "📚 Quick Reference:"
-echo "   --duration <min>  : How long to stay in meeting (default: 10)"
+echo "   --duration <min>  : How long to stay in meeting (default: 5)"
 echo "   Ctrl+C           : Exit early"
 echo ""
 
 echo "🚀 Prerequisites:"
-echo "   1. Backend server must be running: npm run dev:backend"
-echo "   2. Valid ACS connection string in .env"
+echo "   1. Valid ACS connection string in backend/.env"
+echo "   2. Playwright browsers installed (npx playwright install)"
 echo "   3. Valid Teams meeting URL or ID/passcode"
 echo ""
 
 echo "💡 Pro Tips:"
-echo "   - Test with a personal Teams meeting first"
-echo "   - Check backend logs for detailed debugging"
-echo "   - Use short durations for testing"
+echo "   - Everything runs headlessly; use --duration 1 for smoke tests"
+echo "   - Logs prefixed with [Backend] and [Frontend] identify which service is talking"
+echo "   - Ports 3000/3001 must be free before launching"
 echo ""
 
 # If arguments provided, run the command

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Example script showing how to use the ACS Meeting CLI programmatically
+ * Example script showing how to use the headless ACS Meeting CLI programmatically
  * This demonstrates automated meeting joining for testing or bot scenarios
  */
 
@@ -60,7 +60,7 @@ class MeetingBot {
     return new Promise((resolve, reject) => {
       console.log('🔗 Joining meeting...');
       
-      let args: string[] = ['run', 'cli'];
+  let args: string[] = ['run', 'cli', '--'];
       
       if (config.type === 'url' && config.meetingUrl) {
         args.push('join-url', config.meetingUrl);
@@ -75,7 +75,7 @@ class MeetingBot {
         args.push('--duration', config.duration.toString());
       }
 
-      this.cliProcess = spawn('npm', args, {
+  this.cliProcess = spawn('npm', args, {
         cwd: path.join(__dirname, '..', '..'),
         stdio: ['pipe', 'pipe', 'pipe']
       });

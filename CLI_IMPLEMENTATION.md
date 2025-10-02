@@ -1,207 +1,93 @@
 # CLI Implementation Summary
 
-## ✅ What Was Added
+## ✅ Current State
 
-### 1. Core CLI Tool (`backend/src/cli.ts`)
-- **Headless meeting joining**: Join ACS meetings without any UI
-- **Dual join methods**: Support for both Teams URLs and Meeting ID/Passcode
-- **Configurable duration**: Specify how long to stay in meetings
-- **Graceful shutdown**: Proper cleanup with Ctrl+C
-- **Audio streaming**: Connects to backend WebSocket for audio processing
-- **Event handling**: Real-time participant tracking and call state monitoring
+### Headless CLI (`backend/src/cli-headless.ts`)
+- Automates the real browser-based join flow via Playwright
+- Boots backend (`npm run dev`) and frontend (`npm run dev`) automatically
+- Supports both Teams meeting URLs and meeting ID/passcode
+- Defaults to a 5-minute stay with `--duration` override
+- Provides graceful shutdown and resource cleanup on exit
 
-### 2. Example Bot (`backend/src/example-bot.ts`)
-- **Programmatic control**: Automated meeting joining for bots/testing
-- **Process management**: Auto-start backend server
-- **Error handling**: Comprehensive error handling and cleanup
-- **Lifecycle management**: Proper process spawning and termination
+### Example Bot (`backend/src/example-bot.ts`)
+- Demonstrates orchestrating the headless CLI from Node.js
+- Handles backend startup, CLI execution, and teardown
+- Useful blueprint for CI pipelines or scripted monitoring
 
-### 3. Package Configuration
-- **New dependencies**: Added ACS calling SDK, commander, ws, and type definitions
-- **New scripts**: Added CLI and example commands to package.json
-- **Workspace integration**: CLI accessible from root workspace
+### Tooling & Scripts
+- Root and backend `package.json` scripts simplified to point exclusively at the headless CLI
+- Legacy commands (`cli:simple`, `cli:dev`) removed to prevent confusion
+- npm bin entry `acs-meeting-cli` now maps to `dist/cli-headless.js`
 
-### 4. Documentation
-- **CLI_README.md**: Comprehensive CLI documentation
-- **Updated README.md**: Added CLI section to main documentation  
-- **demo-cli.sh**: Interactive demo script
-- **CLI_IMPLEMENTATION.md**: This summary file
+### Documentation Refresh
+- `README.md`, `CLI_README.md`, and `CLI_STATUS.md` updated to reference only the headless flow
+- Obsolete guidance for the deleted CLIs eliminated
+- `demo-cli.sh` (updated separately) showcases the new command set
 
-## 🚀 Usage Examples
+## 🚀 Day-to-Day Usage
 
-### Basic CLI Usage
 ```bash
-# Start backend (required)
-npm run dev:backend
+# Join by URL for 5 minutes
+npm run cli --workspace=backend -- join-url "https://teams.microsoft.com/l/meetup-join/..."
 
-# Join meeting with URL for 5 minutes
-npm run cli join-url "https://teams.microsoft.com/l/meetup-join/your-url" --duration 5
+# Join by meeting ID & passcode for 20 minutes
+npm run cli --workspace=backend -- join-id "MEETING_ID" "PASSCODE" --duration 20
 
-# Join with meeting ID and passcode for 15 minutes
-npm run cli join-id "123456789" "abc123" --duration 15
-
-# Show help
-npm run cli --help
+# Inspect CLI help
+npm run cli --workspace=backend -- --help
 ```
 
-### Programmatic Usage (Bot)
-```bash
-# Run example bot
-npm run example "https://teams.microsoft.com/l/meetup-join/your-url"
+The CLI streams backend and frontend logs directly, so you can confirm port binding, token issuance, and meeting status from a single terminal session.
+
+## 🏗️ High-Level Flow
+
+```mermaid
+sequenceDiagram
+    participant CLI as Headless CLI
+    participant BE as Fastify Backend
+    participant FE as Vite Frontend
+    participant Browser as Headless Chromium
+
+    CLI->>BE: npm run dev (spawn)
+    CLI->>FE: npm run dev (spawn)
+    CLI->>Browser: Launch headless Chromium
+    Browser->>FE: Load http://localhost:3000
+    Browser->>FE: Fill join form & submit
+    FE->>ACS: Join Teams meeting via ACS SDK
+    Browser-->>CLI: Session updates
+    CLI->>CLI: Wait for duration
+    CLI->>Browser: Leave & close
+    CLI->>FE: Terminate process
+    CLI->>BE: Terminate process
 ```
 
-### Demo Script
-```bash
-# Show available commands
-./demo-cli.sh
+## 🔧 Technical Notes
 
-# Run with parameters
-./demo-cli.sh join-url "your-url" --duration 3
-```
+- No browser polyfills required—Playwright gives us the full web stack.
+- Backend dependencies trimmed (removed ACS calling SDK, jsdom, ws, etc.).
+- Strong signal handling ensures `Ctrl+C` tears everything down cleanly.
+- Default Playwright permissions grant microphone access automatically.
 
-## 🏗️ Architecture
+## 🗑️ Retired Solutions
 
-```
-CLI Tool (cli.ts)
-    ↓
-ACS SDK (Lazy-loaded)
-    ↓
-Teams Meeting Connection
-    ↓
-Audio Stream → WebSocket → Backend Server
-    ↓
-Audio Processing Pipeline
-```
+| File | Reason Removed |
+| --- | --- |
+| `backend/src/cli.ts` | Relied on brittle browser polyfills and frequently failed in production scenarios. |
+| `backend/src/cli-simple.ts` | Simulated behaviour only; did not actually join meetings. |
 
-## 🔧 Technical Features
+Removing these files prevents accidental use of incomplete flows and reduces dependency weight.
 
-### CLI Tool Features
-- ✅ Commander.js for robust CLI interface
-- ✅ Lazy-loading of ACS SDK to avoid tsx conflicts
-- ✅ WebSocket integration for audio streaming
-- ✅ TypeScript with proper type safety
-- ✅ Environment variable support (.env)
-- ✅ Graceful error handling and cleanup
-- ✅ Signal handling (SIGINT, SIGTERM)
+## � Key Files
 
-### Example Bot Features
-- ✅ Process spawning and management
-- ✅ Backend auto-start capability
-- ✅ Configurable meeting parameters
-- ✅ Timeout and error handling
-- ✅ Promise-based async/await patterns
+- `backend/src/cli-headless.ts` – Main CLI implementation
+- `backend/src/example-bot.ts` – Programmatic wrapper sample
+- `CLI_README.md` – Detailed user guide
+- `CLI_STATUS.md` – Status overview
 
-## 📦 Dependencies Added
+## ✅ Validation Snapshot
 
-### Production Dependencies
-- `@azure/communication-calling`: ^1.13.1
-- `commander`: ^11.0.0
-- `ws`: ^8.13.0
+- TypeScript build: `npm run build --workspace=backend`
+- Headless CLI smoke test: invoked with both `join-url` and `join-id` locally
+- Documentation updated to remove stale references
 
-### Development Dependencies
-- `@types/ws`: ^8.5.0
-
-## 🎯 Use Cases
-
-### 1. Automated Testing
-```typescript
-const bot = new MeetingBot();
-await bot.startBackend();
-await bot.joinMeeting({
-  type: 'url',
-  meetingUrl: 'test-meeting-url',
-  duration: 2
-});
-```
-
-### 2. Meeting Monitoring
-```bash
-npm run cli join-url "meeting-url" --duration 60
-# Monitor for 1 hour, stream audio for analysis
-```
-
-### 3. Integration Testing
-```bash
-# CI/CD pipeline testing
-npm run cli join-id "test-meeting" "test-pass" --duration 1
-```
-
-### 4. Bot Development
-```typescript
-// Custom bot implementation
-class MyMeetingBot extends MeetingBot {
-  async onParticipantJoined(participant) {
-    // Custom logic
-  }
-}
-```
-
-## 🔒 Security Considerations
-
-- ✅ Environment variables for sensitive data
-- ✅ No hardcoded credentials
-- ✅ Proper token lifecycle management
-- ✅ Secure WebSocket connections
-- ✅ Automatic resource cleanup
-
-## 🚧 Limitations & Solutions
-
-### Known Issues & Fixes
-
-#### ✅ **ACS SDK + tsx Compatibility Issue**
-- **Problem**: `TypeError: Cannot redefine property: name` when using `tsx`
-- **Root Cause**: Azure Communication Services SDK has conflicts with TypeScript execution
-- **Solution**: Use compiled JavaScript instead of tsx
-- **Implementation**: 
-  - `npm run cli` (✅ uses compiled JS)
-  - `npm run cli:dev` (❌ uses tsx, will fail)
-
-#### ✅ **Command Syntax**
-- **Correct**: `npm run cli --workspace=backend -- join-url "url"`
-- **From backend dir**: `cd backend && npm run cli join-url "url"`
-
-### Current Limitations
-- Audio stream processing is simplified (proof of concept)
-- Limited to anonymous meeting joins
-- Basic participant event handling
-
-### Potential Enhancements
-- Advanced audio stream processing
-- Video stream support
-- Recording capabilities
-- Meeting transcription integration
-- Participant interaction features
-- Meeting analytics and reporting
-
-## 📝 Files Modified/Created
-
-### New Files
-- `backend/src/cli.ts` - Main CLI tool
-- `backend/src/example-bot.ts` - Example bot implementation
-- `CLI_README.md` - CLI-specific documentation
-- `demo-cli.sh` - Interactive demo script
-- `CLI_IMPLEMENTATION.md` - This summary
-
-### Modified Files
-- `backend/package.json` - Added dependencies and scripts
-- `package.json` - Added CLI script to root workspace
-- `README.md` - Added CLI section and examples
-
-## ✅ Testing Status
-
-- ✅ TypeScript compilation passes
-- ✅ CLI help commands work correctly
-- ✅ Package scripts configured properly
-- ✅ No linting errors
-- ✅ Build process successful
-
-## 🎉 Result
-
-You now have a fully functional CLI tool that provides the same ACS meeting joining capabilities as the frontend, but without any visual interface. This enables:
-
-- **Headless automation** for testing and bots
-- **Server-side integration** for backend services  
-- **Scriptable meeting joining** for DevOps workflows
-- **Programmatic meeting control** for custom applications
-
-The CLI maintains all the original functionality including audio streaming to the backend for processing, while adding the flexibility of command-line operation.
+The repository now presents a single, fully supported CLI path built on top of the proven browser experience, eliminating maintenance overhead from experimental variants.
