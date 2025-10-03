@@ -1,13 +1,10 @@
-import { defineConfig, mergeConfig } from 'vitest/config';
-import baseConfig from './vite.config';
+import { defineConfig } from 'vitest/config';
 
-export default mergeConfig(
-  baseConfig,
-  defineConfig({
-    test: {
-      globals: true,
-      environment: 'jsdom',
-      setupFiles: './src/setupTests.ts'
-    }
-  })
-);
+// Keep vitest isolated from Vite dev server settings (proxies/ports)
+export default defineConfig({
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './src/setupTests.ts'
+  }
+});
