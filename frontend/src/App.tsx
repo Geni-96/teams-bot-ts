@@ -1,5 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { CallClient, CallAgent, Call } from '@azure/communication-calling';
+import {
+  CallClient,
+  CallAgent,
+  Call,
+  TeamsMeetingLinkLocator,
+  TeamsMeetingIdLocator
+} from '@azure/communication-calling';
 import { AzureCommunicationTokenCredential } from '@azure/communication-common';
 import './App.css';
 
@@ -76,19 +82,17 @@ function App() {
     try {
       setConnectionStatus('Connecting...');
       
-      let locator: any;
+      let joinedCall: Call;
       if (joinMethod === 'url') {
-        // Join using Teams meeting URL
-        locator = { meetingLink: meetingUrl };
+        const locator: TeamsMeetingLinkLocator = { meetingLink: meetingUrl };
+        joinedCall = callAgent.join(locator);
       } else {
-        // Join using meeting ID and passcode
-        locator = {
+        const locator: TeamsMeetingIdLocator = {
           meetingId: meetingId,
           passcode: passcode
         };
+        joinedCall = callAgent.join(locator);
       }
-      
-      const joinedCall = callAgent.join(locator);
       
       setCall(joinedCall);
       setConnectionStatus('Connected');
