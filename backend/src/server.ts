@@ -59,7 +59,7 @@ export function buildServer(
       } catch (error: unknown) {
         fastify.log.error('Error creating ACS token:');
         fastify.log.error(error);
-        reply.status(500).send({ error: 'Failed to create token' });
+        return reply.status(500).send({ error: 'Failed to create token' });
       }
     }
   );

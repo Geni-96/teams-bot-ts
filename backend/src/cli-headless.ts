@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-import { CommunicationIdentityClient } from '@azure/communication-identity';
 import { chromium, Browser, Page } from 'playwright';
 import dotenv from 'dotenv';
 import { program } from 'commander';
@@ -18,16 +17,13 @@ interface MeetingOptions {
 }
 
 class ACMeetingCLIHeadless {
-  private identityClient: CommunicationIdentityClient;
   private browser: Browser | null = null;
   private page: Page | null = null;
   private backendProcess: ChildProcess | null = null;
   private frontendProcess: ChildProcess | null = null;
 
   constructor() {
-    this.identityClient = new CommunicationIdentityClient(
-      process.env.ACS_CONNECTION_STRING || ''
-    );
+    // No-op constructor; environment is loaded via dotenv above
   }
 
   async startBackend(): Promise<void> {

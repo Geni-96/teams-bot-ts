@@ -7,9 +7,9 @@ export interface AudioChunk {
 }
 
 export class AudioProcessor {
-  private audioBuffer: ArrayBuffer[] = [];
-  private bufferStartTime: number = 0;
-  private readonly BUFFER_DURATION_MS = 30000; // 30 seconds
+  protected audioBuffer: ArrayBuffer[] = [];
+  protected bufferStartTime: number = 0;
+  protected readonly BUFFER_DURATION_MS = 30000; // 30 seconds
 
   async processAudio(audioData: AudioChunk): Promise<void> {
     // Add audio data to buffer
@@ -28,7 +28,7 @@ export class AudioProcessor {
     }
   }
 
-  private async processBuffer(): Promise<void> {
+  protected async processBuffer(): Promise<void> {
     if (this.audioBuffer.length === 0) return;
     
     try {
@@ -52,7 +52,7 @@ export class AudioProcessor {
     }
   }
 
-  private combineAudioChunks(chunks: ArrayBuffer[]): ArrayBuffer {
+  protected combineAudioChunks(chunks: ArrayBuffer[]): ArrayBuffer {
     // Calculate total length
     const totalLength = chunks.reduce((sum, chunk) => sum + chunk.byteLength, 0);
     
@@ -70,13 +70,13 @@ export class AudioProcessor {
     return combined;
   }
 
-  private normalizeAudio(audioData: ArrayBuffer): ArrayBuffer {
+  protected normalizeAudio(audioData: ArrayBuffer): ArrayBuffer {
     // TODO: Implement audio normalization to 16kHz mono PCM
     // This is a placeholder implementation
     return audioData;
   }
 
-  private createWavFile(audioData: ArrayBuffer): Buffer {
+  protected createWavFile(audioData: ArrayBuffer): Buffer {
     // TODO: Implement WAV file creation
     // This is a placeholder implementation
     return Buffer.from(audioData);
@@ -96,7 +96,7 @@ export class AudioProcessor {
     };
   }
 
-  private resetBuffer(): void {
+  protected resetBuffer(): void {
     this.audioBuffer = [];
     this.bufferStartTime = 0;
   }
