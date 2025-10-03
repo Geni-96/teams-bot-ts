@@ -11,7 +11,7 @@ describe('App', () => {
     render(<App />);
 
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
-      'Azure Communication Services Calling App'
+      'Serene Connect'
     );
 
     expect(await screen.findByText(/Status: Initialized/i)).toBeInTheDocument();

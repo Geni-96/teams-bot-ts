@@ -162,7 +162,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>Azure Communication Services Calling App</h1>
+        <h1>Serene Connect</h1>
         <p className="status-text">Status: {connectionStatus}</p>
         
         {!isInitialized && (
