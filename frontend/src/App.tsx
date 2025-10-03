@@ -15,6 +15,13 @@ interface TokenResponse {
   expiresOn: string; // backend serializes Date to ISO string
 }
 
+// Augment Window to avoid using `any` for a dev-mode init guard
+declare global {
+  interface Window {
+    __APP_INIT__?: boolean;
+  }
+}
+
 function App() {
   const [callAgent, setCallAgent] = useState<CallAgent | null>(null);
   const [call, setCall] = useState<Call | null>(null);
@@ -30,10 +37,10 @@ function App() {
   useEffect(() => {
     // In Vite dev, prevent duplicate init across StrictMode remounts
     if (import.meta.env.MODE === 'development') {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore - declared at module top in previous edit or inferred
-      if ((globalThis as any).__APP_INIT__) return;
-      (globalThis as any).__APP_INIT__ = true;
+      if (typeof window !== 'undefined') {
+        if (window.__APP_INIT__) return;
+        window.__APP_INIT__ = true;
+      }
     } else {
       if (didInitRef.current) return;
       didInitRef.current = true;
