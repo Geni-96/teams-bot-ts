@@ -9,6 +9,31 @@
 				"$tsc"
 			],
 			"group": "build"
+		},
+		{
+			"label": "Test Frontend",
+			"type": "shell",
+			"command": "npm run test --workspace=frontend"
+		},
+		{
+			"label": "Test Frontend",
+			"type": "shell",
+			"command": "npm run test --workspace=frontend"
+		},
+		{
+			"label": "Test Frontend",
+			"type": "shell",
+			"command": "npm run test --workspace=frontend"
+		},
+		{
+			"label": "Test Frontend",
+			"type": "shell",
+			"command": "npm run test --workspace=frontend"
+		},
+		{
+			"label": "Test Frontend",
+			"type": "shell",
+			"command": "npm run test --workspace=frontend"
 		}
 	]
 }
