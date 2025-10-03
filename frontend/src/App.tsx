@@ -12,7 +12,7 @@ import './App.css';
 interface TokenResponse {
   user: string;
   token: string;
-  expiresOn: Date;
+  expiresOn: string; // backend serializes Date to ISO string
 }
 
 function App() {
@@ -25,8 +25,19 @@ function App() {
   const [joinMethod, setJoinMethod] = useState<'url' | 'id'>('url');
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
   const wsRef = useRef<WebSocket | null>(null);
+  const didInitRef = useRef<boolean>(false); // guard StrictMode re-mounts per instance
 
   useEffect(() => {
+    // In Vite dev, prevent duplicate init across StrictMode remounts
+    if (import.meta.env.MODE === 'development') {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore - declared at module top in previous edit or inferred
+      if ((globalThis as any).__APP_INIT__) return;
+      (globalThis as any).__APP_INIT__ = true;
+    } else {
+      if (didInitRef.current) return;
+      didInitRef.current = true;
+    }
     initializeCallClient();
     return () => {
       if (wsRef.current) {
@@ -108,7 +119,8 @@ function App() {
 
   const setupAudioStreaming = () => {
     // Initialize WebSocket connection for audio streaming
-    wsRef.current = new WebSocket('ws://localhost:3001/audio');
+    // Use a relative path so Vite proxy (dev) and same-origin (prod) handle host/scheme
+    wsRef.current = new WebSocket('/audio');
     
     wsRef.current.onopen = () => {
       console.log('WebSocket connected');

@@ -4,6 +4,7 @@ import App from './App'
 import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
+  // Keep StrictMode for dev; App guards duplicate init internally
   <React.StrictMode>
     <App />
   </React.StrictMode>,
